@@ -49,14 +49,16 @@ int main()
     DWORD dwWritten, dwRead;
 
     char str[256];
-    printf("Введите строку: ");
+    printf("Write string: ");
     fgets(str, sizeof(str), stdin);
     WriteFile(g_hChildStd_IN_Wr, &str, sizeof(str), &dwWritten, NULL);
 
     char result[256];
     ReadFile(g_hChildStd_OUT_Rd_2, &result, sizeof(result), &dwRead, NULL);
+    printf("Resalt: %s", result);
 
-    printf("Результат: %s", result);
+    CloseHandle(g_hChildStd_OUT_Rd_2);
+    CloseHandle(g_hChildStd_IN_Wr);
     return 0;
 }
 
