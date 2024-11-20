@@ -18,6 +18,7 @@ int main() {
     strcat(str, "\0");
     // Write to standard output
     WriteFile(writeHandle, &str, sizeof(str), &writedBytes, NULL);
-
+    CloseHandle(readHandle);
+    CloseHandle(writeHandle);
     return 0;
 }

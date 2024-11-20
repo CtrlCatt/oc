@@ -20,6 +20,7 @@ int main()
     strcat(res, "\0");
 
     WriteFile(writeHandle, &res, sizeof(str), &writedBytes, NULL);
-
+    CloseHandle(readHandle);
+    CloseHandle(writeHandle);
     return 0;
 }
