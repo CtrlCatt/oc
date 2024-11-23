@@ -87,7 +87,7 @@ int CreateChildProcess()
         szCmdline,     // command line 
         NULL,           
         NULL,          
-        TRUE,          // handles are inherited 
+        TRUE,           
         0,              
         NULL,           
         NULL,           
