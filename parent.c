@@ -85,12 +85,12 @@ int CreateChildProcess()
 
     bSuccess = CreateProcess(NULL,
         szCmdline,     // command line 
-        NULL,          // process security attributes 
-        NULL,          // primary thread security attributes 
+        NULL,           
+        NULL,          
         TRUE,          // handles are inherited 
-        0,             // creation flags 
-        NULL,          // use parent's environment 
-        NULL,          // use parent's current directory 
+        0,              
+        NULL,           
+        NULL,           
         &siStartInfo,  // STARTUPINFO pointer 
         &piProcInfo);  // receives PROCESS_INFORMATION 
 
