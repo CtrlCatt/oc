@@ -1,5 +1,4 @@
-// CreateProcess.cpp : This file contains the 'main' function. Program execution begins and ends there.
-//
+
 
 #include "stdio.h"
 #include "windows.h"
@@ -85,12 +84,12 @@ int CreateChildProcess()
 
     bSuccess = CreateProcess(NULL,
         szCmdline,     // command line 
-        NULL,          // process security attributes 
-        NULL,          // primary thread security attributes 
-        TRUE,          // handles are inherited 
-        0,             // creation flags 
-        NULL,          // use parent's environment 
-        NULL,          // use parent's current directory 
+        NULL,           
+        NULL,          
+        TRUE,           
+        0,              
+        NULL,           
+        NULL,           
         &siStartInfo,  // STARTUPINFO pointer 
         &piProcInfo);  // receives PROCESS_INFORMATION 
 
