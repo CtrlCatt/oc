@@ -1,11 +1,16 @@
 #include "windows.h"
 #include "stdio.h"
+#include "string.h"
 
 #define FILE_SIZE 256
 
+//ОБЪЯВЛЕНИЕ Ф ЦИЙ ПОТОКОВ
+DWORD WINAPI process_to_lower(LPVOID lpParam);
+DWORD WINAPI replace_spaces_with_underscore(LPVOID lpParam);
+
 int main() {
     HANDLE hFile, hMapFile; // hFile - дескриптор, указывающий на файл на диске. hMapFile - загружает данные в память.
-    LPVOID pBuf; // pBuf - указыват на область памяти, ранее выделенной под созданный файл.
+    LPVOID pBuf; // pBuf - указывает на область памяти, ранее выделенной под созданный файл.
 
     // Create file mapping
     hFile = CreateFile(
@@ -18,7 +23,7 @@ int main() {
         NULL);                           // Без шаблонного файла
 
     if (hFile == INVALID_HANDLE_VALUE) {
-        printf("Could not create file: %d\n", GetLastError());
+        printf("Could not create file: %lu\n", GetLastError());
         return 1;
     }
 
@@ -31,7 +36,7 @@ int main() {
         TEXT("SharedMemory"));          // Имя отображаемого файла
 
     if (hMapFile == NULL) {
-        printf("Could not create file mapping object: %d\n", GetLastError());
+        printf("Could not create file mapping object: %lu\n", GetLastError());
         CloseHandle(hFile);
         return 1;
     }
@@ -44,7 +49,7 @@ int main() {
         FILE_SIZE);
 
     if (pBuf == NULL) {
-        printf("Could not map view of file: %d\n", GetLastError());
+        printf("Could not map view of file: %lu\n", GetLastError());
         CloseHandle(hMapFile);
         CloseHandle(hFile);
         return 1;
@@ -56,20 +61,21 @@ int main() {
     fgets(input, FILE_SIZE, stdin);
     strcpy((char *)pBuf, input); // strcpy требует, чтобы её первый аргумент был указателем на строку (char *). ИЗГНАЛ СКВЕРНУ!!!!!!
 
-    // Start child processes
-    STARTUPINFO si = {0};
-    PROCESS_INFORMATION pi1, pi2;
-    si.cb = sizeof(si);
+    // Start child threads instead of processes
+    HANDLE hThread1 = CreateThread(NULL, 0, process_to_lower, pBuf, 0, NULL);
+    HANDLE hThread2 = CreateThread(NULL, 0, replace_spaces_with_underscore, pBuf, 0, NULL);
 
-    CreateProcess(
-        TEXT("child.exe"), NULL, NULL, NULL, FALSE, 0, NULL, NULL, &si, &pi1);
+    if (hThread1 == NULL || hThread2 == NULL) {
+        printf("Failed to create threads: %lu\n", GetLastError());
+        return 1;
+    }
 
-    WaitForSingleObject(pi1.hProcess, INFINITE);
+    // Wait for threads to finish
+    WaitForSingleObject(hThread1, INFINITE);
+    WaitForSingleObject(hThread2, INFINITE);
 
-    CreateProcess(
-        TEXT("child_2.exe"), NULL, NULL, NULL, FALSE, 0, NULL, NULL, &si, &pi2);
-
-    WaitForSingleObject(pi2.hProcess, INFINITE);
+    CloseHandle(hThread1);
+    CloseHandle(hThread2);
 
     // Output result
     printf("Result: %s\n", (char *)pBuf);
@@ -78,10 +84,6 @@ int main() {
     UnmapViewOfFile(pBuf);
     CloseHandle(hMapFile);
     CloseHandle(hFile);
-    CloseHandle(pi1.hProcess);
-    CloseHandle(pi1.hThread);
-    CloseHandle(pi2.hProcess);
-    CloseHandle(pi2.hThread);
 
     return 0;
 }
