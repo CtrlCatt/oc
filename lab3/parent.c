@@ -15,10 +15,10 @@ int main() {
     // Create file mapping
     hFile = CreateFile(
         TEXT("shared_file"),             // Имя файла
-        GENERIC_READ | GENERIC_WRITE,    // Режим: чтение и запись
+        GENERIC_READ | GENERIC_WRITE,    // Разрешение на чтение и запись
         0,                               // Отключённый доступ для других процессов
         NULL,                            // Без защиты
-        CREATE_ALWAYS,                   // Всегда создавать новый файл
+        CREATE_ALWAYS,                   // Всегда создавать новый файл(если сущетвует - перезаписать)
         FILE_ATTRIBUTE_NORMAL,           // Обычные атрибуты
         NULL);                           // Без шаблонного файла
 
@@ -28,12 +28,13 @@ int main() {
     }
 
     hMapFile = CreateFileMapping(
-        hFile,                          // Файл, который нужно отобразить
+        hFile,                          // Файл, который нужно отобразить в память
         NULL,                           // Защита по умолчанию
         PAGE_READWRITE,                 // Разрешение на чтение и запись
         0,                              // Старшие 32 бита размера
         FILE_SIZE,                      // Размер файла в байтах (256)
-        TEXT("SharedMemory"));          // Имя отображаемого файла
+        TEXT("SharedMemory"));          // Имя, по которому другой процесс может открыть этот файл.
+
 
     if (hMapFile == NULL) {
         printf("Could not create file mapping object: %lu\n", GetLastError());
@@ -42,9 +43,9 @@ int main() {
     }
 
     pBuf = MapViewOfFile(
-        hMapFile,
-        FILE_MAP_ALL_ACCESS,
-        0,
+        hMapFile, 
+        FILE_MAP_ALL_ACCESS, // Разрешение на чтение и запись
+        0, 
         0,
         FILE_SIZE);
 

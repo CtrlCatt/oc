@@ -6,7 +6,7 @@ typedef float (*DerivativeFunc)(float, float);
 typedef float (*EFunc)(int);
 
 int main() {
-    HMODULE hLib = LoadLibrary("libmathfuncs.dll");
+    HMODULE hLib = LoadLibraryW(L"libmathfuncs.dll");
     if (!hLib) {
         std::cerr << "Failed to load the library." << std::endl;
         return 1;

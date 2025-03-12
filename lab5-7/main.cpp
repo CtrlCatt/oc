@@ -13,11 +13,11 @@ struct Message {
 
 class Node {
 public:
-    int id;
-    HANDLE process;
-    HANDLE inputWrite;
-    HANDLE outputRead;
-    bool available;
+    int id; // Идентификатор узла
+    HANDLE process; // Дескриптор процесса
+    HANDLE inputWrite; // Дескриптор для записи ввода
+    HANDLE outputRead; // Дескриптор для чтения вывода
+    bool available; // Доступность узла
     std::vector<int> children;
 
     Node() : id(-1), process(NULL), inputWrite(NULL), outputRead(NULL), available(false) {} // Конструктор по умолчанию
@@ -54,7 +54,8 @@ public:
         si.dwFlags |= STARTF_USESTDHANDLES;
 
         std::string cmd = "worker.exe " + std::to_string(id);
-        if (!CreateProcess(NULL, &cmd[0], NULL, NULL, TRUE, 0, NULL, NULL, &si, &pi)) {
+        std::wstring wcmd(cmd.begin(), cmd.end()); // Преобразование в std::wstring
+        if (!CreateProcess(NULL, &wcmd[0], NULL, NULL, TRUE, 0, NULL, NULL, &si, &pi)) {
             std::cout << "Error: Could not create process" << std::endl;
             return;
         }

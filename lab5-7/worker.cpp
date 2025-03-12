@@ -6,16 +6,13 @@
 
 #define MSG_SIZE 256
 
-struct Message {
-    int id;
-    char text[MSG_SIZE];
-};
+
 
 void workerProcess(int id) {
     std::map<std::string, int> data;
     std::string command;
     std::cout << "Worker node " << id << " started." << std::endl;
-    std::cout.flush();
+    std::cout.flush(); 
 
     while (true) {
         std::getline(std::cin, command);
